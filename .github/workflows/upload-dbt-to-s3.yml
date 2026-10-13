@@ -1,9 +1,7 @@
 name: Upload dbt project to S3
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
   upload:
