@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - python --version
+      - pip install --upgrade pip
+
+  build:
+    commands:
+      - aws s3 cp s3://joao-strey-project-dbt/dbt-project.zip /tmp/dbt-project.zip
+      - mkdir -p /tmp/dbt-project
+      - unzip -o /tmp/dbt-project.zip -d /tmp/dbt-project
+      - pip install -r /tmp/dbt-project/requirements.txt
+      - cd /tmp/dbt-project/deploy_aws
+      - dbt --version
