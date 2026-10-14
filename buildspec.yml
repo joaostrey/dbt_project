@@ -31,6 +31,7 @@ phases:
 
   build:
     commands:
+      - cd deploy_aws
       - dbt --version
       - dbt debug
       - dbt run
