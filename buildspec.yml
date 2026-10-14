@@ -1,3 +1,4 @@
+
 version: 0.2
 
 phases:
@@ -6,13 +7,31 @@ phases:
       python: 3.12
     commands:
       - python --version
-      - pip install --upgrade pip
+      - python -m pip install --upgrade pip
+      - pip install -r requirements.txt
+
+  pre_build:
+    commands:
+      - mkdir -p ~/.dbt
+      - |
+        cat > ~/.dbt/profiles.yml <<'EOF'
+        deploy_aws:
+          target: dev
+          outputs:
+            dev:
+              type: postgres
+              host: "{{ env_var('DB_HOST') }}"
+              user: "{{ env_var('DB_USER') }}"
+              password: "{{ env_var('DB_PASSWORD') }}"
+              port: 5432
+              dbname: "{{ env_var('DB_NAME') }}"
+              schema: public
+              threads: 1
+        EOF
 
   build:
     commands:
-      - aws s3 cp s3://joao-strey-project-dbt/dbt-project.zip /tmp/dbt-project.zip
-      - mkdir -p /tmp/dbt-project
-      - unzip -o /tmp/dbt-project.zip -d /tmp/dbt-project
-      - pip install -r /tmp/dbt-project/requirements.txt
-      - cd /tmp/dbt-project/deploy_aws
       - dbt --version
+      - dbt debug
+      - dbt run
+
