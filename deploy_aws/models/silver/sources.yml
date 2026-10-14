@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: vendas
+    schema: public
+    tables:
+      - name: clientes
+      - name: produtos
+      - name: pedidos
+      - name: itens_pedido
