@@ -91,7 +91,7 @@ jobs:
           git add target/manifest.json
 
           if ! git diff --cached --quiet; then
-            git commit -m "Update dbt manifest [skip ci]"
+            git commit -m "Update dbt manifest - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
             git push
           else
             echo "O manifest não teve alterações."
