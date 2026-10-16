@@ -1,4 +1,3 @@
-
 version: 0.2
 
 phases:
@@ -31,8 +30,32 @@ phases:
 
   build:
     commands:
-      - cd deploy_aws
-      - dbt --version
-      - dbt debug
-      - dbt run
+      - |
+        set -e
 
+        cd deploy_aws
+
+        dbt --version
+        dbt debug
+
+        # Preserve the previous manifest before dbt updates target/
+        mkdir -p /tmp/dbt-state
+
+        if [ -f target/manifest.json ]; then
+          cp target/manifest.json /tmp/dbt-state/manifest.json
+
+          echo "Previous manifest found. Running modified models."
+
+          dbt run \
+            --select state:modified+ \
+            --state /tmp/dbt-state
+        else
+          echo "No previous manifest found. Running all models."
+
+          dbt run
+        fi
+
+        # Publish only after dbt run succeeds
+        aws s3 cp \
+          target/manifest.json \
+          "s3://${S3_BUCKET}/dbt-state/manifest.json"
